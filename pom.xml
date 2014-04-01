@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.googlecode.redbox-mint</groupId>
+    <artifactId>plugin-transaction-external-curation</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>ReDBox - Plugin - Transaction - External Curation</name>
+    <parent>
+        <groupId>com.googlecode.redbox-mint</groupId>
+        <artifactId>redbox-project</artifactId>
+        <version>1.7</version>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>com.googlecode.the-fascinator</groupId>
+            <artifactId>fascinator-core</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.the-fascinator</groupId>
+            <artifactId>fascinator-common</artifactId>
+            <version>1.2</version>
+        </dependency>
+          <dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>3.6.3.Final</version>
+		</dependency>
+		<dependency>
+		 	<groupId>com.googlecode.the-fascinator</groupId>
+    		<artifactId>fascinator-config-db</artifactId>
+    		<version>0.1</version>
+    		<scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.the-fascinator</groupId>
+            <artifactId>fascinator-plugin-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+            <version>4.1</version>
+        </dependency>
+    </dependencies>
+</project>
