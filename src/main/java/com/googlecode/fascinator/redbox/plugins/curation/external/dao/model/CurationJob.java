@@ -41,6 +41,8 @@ public class CurationJob implements Serializable{
 	
 	private String curationJobId;
 
+	private String status = "INPROGRESS";
+	
 	private Set<CurationRecord> curationRecords;
 	
 	@Id
@@ -70,6 +72,15 @@ public class CurationJob implements Serializable{
 
 	public void setCurationRecords(Set<CurationRecord> curationRecords) {
 		this.curationRecords = curationRecords;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+	
+	@Column
+	public void setStatus(String status) {
+		this.status = status;
 	}	
 	
 }

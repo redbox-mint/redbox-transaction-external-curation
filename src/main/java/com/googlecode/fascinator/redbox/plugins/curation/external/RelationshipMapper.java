@@ -136,7 +136,7 @@ public class RelationshipMapper {
 		GetMethod get;
 		try {
 			String url = systemConfig.getString(null, "curation",
-					"external-system-urls", sourceSystem);
+					"external-system-urls","relationships", sourceSystem);
 			url = url + "&identifier=" + identifier;
 			BasicHttpClient client = new BasicHttpClient(url);
 			get = new GetMethod(url);
