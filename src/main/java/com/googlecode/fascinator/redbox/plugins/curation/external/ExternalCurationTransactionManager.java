@@ -967,6 +967,9 @@ public class ExternalCurationTransactionManager extends GenericTransactionManage
 				log.error(String
 						.format("Error accessing Curation Manager, status code '%d' returned with message: %s",
 								 status, text));
+				log.error(String
+						.format("Request message was: %s",
+								 requestJson.toString()));
 				return null;
 			}
 
