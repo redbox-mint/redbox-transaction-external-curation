@@ -510,7 +510,7 @@ public class ExternalCurationTransactionManager extends GenericTransactionManage
 					
 					JsonSimple externalCurationResponse = createJobInExternalCurationManager(externalCurationMessage);
 					if(externalCurationResponse != null) {
-						String jobId = externalCurationResponse.getString(null, "job_id");
+						String jobId = externalCurationResponse.getString(null, "jobId");
 						if(jobId == null) {
 							throw new TransactionException("Response from external curation manager was invalid :" + externalCurationResponse.toString(true));
 						}
