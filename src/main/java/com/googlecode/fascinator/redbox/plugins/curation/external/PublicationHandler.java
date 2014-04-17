@@ -68,7 +68,7 @@ public class PublicationHandler {
 		system = systemConfig.getString("redbox", "system");
 	}
 
-	public void publishRecords(ArrayList<JsonObject> records) throws StorageException {
+	public void publishRecords(ArrayList<JsonObject> records) throws StorageException, IOException {
 
 		for (JsonObject record : records) {
 			String type = (String) record.get("type");
@@ -77,7 +77,7 @@ public class PublicationHandler {
 			if (targetSystem.equals(system)) {
 				publishRecord(record);
 			} else {
-				publishRecordInExternalSystem(record,system);
+				publishRecordInExternalSystem(record,targetSystem);
 			}
 
 		}
@@ -125,7 +125,7 @@ public class PublicationHandler {
 
 	}
 
-	private void publishRecord(JsonObject recordObject) throws StorageException {
+	private void publishRecord(JsonObject recordObject) throws StorageException, IOException {
 		JsonSimple record = new JsonSimple(recordObject);
 		DigitalObject object = storage.getObject((String)record.getString(null,"oid"));
 		Properties tfObjMeta = object.getMetadata();
@@ -133,12 +133,16 @@ public class PublicationHandler {
 		//Set all the pids as configured
 		for (Object requiredIdentifierObject : requiredIdentifiers) {
 			JsonSimple requiredIdentifier = new JsonSimple((JsonObject)requiredIdentifierObject);
-			String identifierPid = requiredIdentifier.getString(null, "identifier-pids",requiredIdentifier.getString(null,"identifier_type"));
+			String identifierPid = systemConfig.getString(null,"curation","identifier-pids",requiredIdentifier.getString(null,"identifier_type"));
 			tfObjMeta.put(identifierPid, requiredIdentifier.getString(null, "identifier"));
 		}
 		
 		//Now publish the record
 		tfObjMeta.put("published", true);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		tfObjMeta.store(outputStream, null);
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+		StorageUtils.createOrUpdatePayload(object,"TF-OBJ-META",inputStream);
 	}
 
 	

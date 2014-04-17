@@ -97,7 +97,8 @@ public class ExternalCurationJobStatusResponseProcessor implements Processor {
 					"curation-manager-url");
 			BasicHttpClient client = new BasicHttpClient(url + "/job/"
 					+ curationJob.getCurationJobId());
-			get = new GetMethod(url);
+			get = new GetMethod(url+ "/job/"
+					+ curationJob.getCurationJobId());
 			client.executeMethod(get);
 			int status = get.getStatusCode();
 			if (status != 200) {
