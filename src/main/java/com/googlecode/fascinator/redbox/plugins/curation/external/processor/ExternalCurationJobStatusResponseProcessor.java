@@ -38,9 +38,10 @@ public class ExternalCurationJobStatusResponseProcessor implements Processor {
 
 	private PublicationHandler publicationHandler;
 
-	public ExternalCurationJobStatusResponseProcessor() {
+	public ExternalCurationJobStatusResponseProcessor() throws IOException {
 		publicationHandler = (PublicationHandler) ApplicationContextProvider
 				.getApplicationContext().getBean("publicationHandler");
+		systemConfig = new JsonSimpleConfig();
 
 	}
 
