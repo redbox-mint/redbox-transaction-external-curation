@@ -2,6 +2,9 @@ package com.googlecode.fascinator.redbox.plugins.curation.external;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.googlecode.fascinator.api.indexer.Indexer;
+import com.googlecode.fascinator.api.indexer.IndexerException;
 import com.googlecode.fascinator.api.indexer.SearchRequest;
 import com.googlecode.fascinator.api.storage.DigitalObject;
 import com.googlecode.fascinator.api.storage.Payload;
@@ -68,7 +72,7 @@ public class PublicationHandler {
 		system = systemConfig.getString("redbox", "system");
 	}
 
-	public void publishRecords(ArrayList<JsonObject> records) throws StorageException, IOException {
+	public void publishRecords(ArrayList<JsonObject> records) throws StorageException, IOException, IndexerException {
 
 		for (JsonObject record : records) {
 			String type = (String) record.get("type");
@@ -125,9 +129,10 @@ public class PublicationHandler {
 
 	}
 
-	private void publishRecord(JsonObject recordObject) throws StorageException, IOException {
+	private void publishRecord(JsonObject recordObject) throws StorageException, IOException, IndexerException {
 		JsonSimple record = new JsonSimple(recordObject);
-		DigitalObject object = storage.getObject((String)record.getString(null,"oid"));
+		String oid = (String)record.getString(null,"oid");
+		DigitalObject object = storage.getObject(oid);
 		Properties tfObjMeta = object.getMetadata();
 		JSONArray requiredIdentifiers = record.getArray("requiredIdentifiers");
 		//Set all the pids as configured
@@ -138,11 +143,15 @@ public class PublicationHandler {
 		}
 		
 		//Now publish the record
-		tfObjMeta.put("published", true);
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		tfObjMeta.put("published", "true");
+		File tempFile = File.createTempFile("publication", "temporary");
+		FileOutputStream outputStream = new FileOutputStream(tempFile);
 		tfObjMeta.store(outputStream, null);
-		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+		
+		FileInputStream inputStream = new FileInputStream(tempFile);
 		StorageUtils.createOrUpdatePayload(object,"TF-OBJ-META",inputStream);
+		tempFile.delete();
+		indexer.index(oid);
 	}
 
 	
