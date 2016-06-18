@@ -3,7 +3,6 @@ package com.googlecode.fascinator.redbox.plugins.curation.external.processor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,11 +10,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.googlecode.fascinator.api.indexer.Indexer;
-import com.googlecode.fascinator.api.storage.Storage;
 import com.googlecode.fascinator.common.BasicHttpClient;
 import com.googlecode.fascinator.common.FascinatorHome;
 import com.googlecode.fascinator.common.JsonObject;

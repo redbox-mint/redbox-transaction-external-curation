@@ -510,11 +510,12 @@ public class ExternalCurationTransactionManager extends GenericTransactionManage
 					
 					JsonSimple externalCurationResponse = createJobInExternalCurationManager(externalCurationMessage);
 					if(externalCurationResponse != null) {
-						String jobId = externalCurationResponse.getString(null, "jobId");
+						String jobId = externalCurationResponse.getString(null, "job_id");
 						if(jobId == null) {
 							throw new TransactionException("Response from external curation manager was invalid :" + externalCurationResponse.toString(true));
 						}
 						job.setCurationJobId(jobId);
+						log.info("Request was made to external curation manager and has been assigned job id: "+ jobId);
 						externalCurationMessageBuilder.saveJob(job);
 					}
 				} catch (IOException e) {
@@ -956,7 +957,7 @@ public class ExternalCurationTransactionManager extends GenericTransactionManage
 			BasicHttpClient client = new BasicHttpClient(url);
 			post = new PostMethod(url);
 			StringRequestEntity requestEntity = new StringRequestEntity(
-				    requestJson.toString(),
+				    requestJson.getArray("records").toString(),
 				    "application/json",
 				    "UTF-8");
 			post.setRequestEntity(requestEntity);

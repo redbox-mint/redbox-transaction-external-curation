@@ -134,7 +134,7 @@ public class PublicationHandler {
 		String oid = (String)record.getString(null,"oid");
 		DigitalObject object = storage.getObject(oid);
 		Properties tfObjMeta = object.getMetadata();
-		JSONArray requiredIdentifiers = record.getArray("requiredIdentifiers");
+		JSONArray requiredIdentifiers = record.getArray("required_identifiers");
 		//Set all the pids as configured
 		for (Object requiredIdentifierObject : requiredIdentifiers) {
 			JsonSimple requiredIdentifier = new JsonSimple((JsonObject)requiredIdentifierObject);

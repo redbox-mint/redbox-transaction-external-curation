@@ -72,18 +72,22 @@ public class FormDataParser {
     public static JsonSimple parse(InputStream input) throws IOException {
         JsonSimple inputData = new JsonSimple(input);
         JsonSimple responseData = new JsonSimple();
-
-        // Go through every top level node
-        JsonObject object = inputData.getJsonObject();
-        for (Object key : object.keySet()) {
-            // Ignoring some non-form related nodes
-            String strKey = validString(key);
-            if (!EXCLUDED_FIELDS.contains(strKey)) {
-                // And parse them into the repsonse
-                String data = validString(object.get(key));
-                parseField(responseData, strKey, data);
+        
+        
+        if(inputData.getObject("data") == null) {
+        	// Go through every top level node
+        	JsonObject object = inputData.getJsonObject();
+        	for (Object key : object.keySet()) {
+                // Ignoring some non-form related nodes
+                String strKey = validString(key);
+                if (!EXCLUDED_FIELDS.contains(strKey)) {
+                    // And parse them into the response
+                    String data = validString(object.get(key));
+                    parseField(responseData, strKey, data);
+                }
             }
         }
+        
         return responseData;
     }
 

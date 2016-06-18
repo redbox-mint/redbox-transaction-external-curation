@@ -100,7 +100,7 @@ public class RelationshipMapper {
 
 				JsonSimple relationshipObject = new JsonSimple(
 						(JsonObject) object);
-				String sourceSystem = relationshipObject.getString("redbox",
+				String sourceSystem = relationshipObject.getString(systemConfig.getString("redbox", "system"),
 						"system");
 				String relationOid = relationshipObject.getString(null, "oid");
 
