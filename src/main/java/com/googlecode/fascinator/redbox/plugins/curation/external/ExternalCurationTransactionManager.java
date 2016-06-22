@@ -20,6 +20,7 @@ package com.googlecode.fascinator.redbox.plugins.curation.external;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import java.util.Set;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +48,13 @@ import com.googlecode.fascinator.api.storage.Storage;
 import com.googlecode.fascinator.api.storage.StorageException;
 import com.googlecode.fascinator.api.transaction.TransactionException;
 import com.googlecode.fascinator.common.BasicHttpClient;
+import com.googlecode.fascinator.common.FascinatorHome;
 import com.googlecode.fascinator.common.JsonObject;
 import com.googlecode.fascinator.common.JsonSimple;
 import com.googlecode.fascinator.common.JsonSimpleConfig;
 import com.googlecode.fascinator.common.solr.SolrDoc;
 import com.googlecode.fascinator.common.solr.SolrResult;
+import com.googlecode.fascinator.common.storage.StorageUtils;
 import com.googlecode.fascinator.common.transaction.GenericTransactionManager;
 import com.googlecode.fascinator.messaging.EmailNotificationConsumer;
 import com.googlecode.fascinator.messaging.TransactionManagerQueueConsumer;
@@ -517,6 +521,19 @@ public class ExternalCurationTransactionManager extends GenericTransactionManage
 						job.setCurationJobId(jobId);
 						log.info("Request was made to external curation manager and has been assigned job id: "+ jobId);
 						externalCurationMessageBuilder.saveJob(job);
+						File inProgressCurationJobsFile = new File(FascinatorHome.getPath()+"/curation-status-responses/inProgressJobs.json");
+						JsonObject inProgressJobs;
+						if(!inProgressCurationJobsFile.exists()) {
+							inProgressJobs = new JsonObject();
+							inProgressJobs.put("inProgressJobs",new JSONArray());
+						} else {
+							inProgressJobs = new JsonSimple(inProgressCurationJobsFile).getJsonObject();
+						}
+						JSONArray inProgressJobsArray = (JSONArray)inProgressJobs.get("inProgressJobs");
+						inProgressJobsArray.add(job.getCurationJobId());
+						
+						FileUtils.writeStringToFile(inProgressCurationJobsFile, new JsonSimple(inProgressJobs).toString(true));
+						setCurationJobIdOnObject(oid,job.getCurationJobId());
 					}
 				} catch (IOException e) {
 					throw new TransactionException("Error in resolving relationships during curation",e);
@@ -532,6 +549,17 @@ public class ExternalCurationTransactionManager extends GenericTransactionManage
 	}
 
 	
+
+	private void setCurationJobIdOnObject(String oid, String curationJobId) throws StorageException, IOException {
+		DigitalObject object = StorageUtils.getDigitalObject(storage, oid);
+		Properties tfObjMeta = object.getMetadata();
+		tfObjMeta.setProperty("curationJobId", curationJobId);
+		ByteArrayOutputStream metaOut = new ByteArrayOutputStream();
+		tfObjMeta.store(metaOut, "");
+        InputStream metaIn = new ByteArrayInputStream(metaOut.toByteArray());
+        object.updatePayload("TF-OBJ-META", metaIn);
+        metaIn.close();
+	}
 
 	private CurationJob buildCurationJob(Map<String, JsonObject> relationships) {
 		Set<CurationRecord> curationRecords = new HashSet<CurationRecord>();

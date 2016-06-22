@@ -73,22 +73,35 @@ public class PublicationHandler {
 	}
 
 	public void publishRecords(ArrayList<JsonObject> records) throws StorageException, IOException, IndexerException {
-
+		Map<String,List<JsonObject>> systemRecordsMap = new HashMap<String, List<JsonObject>>();
 		for (JsonObject record : records) {
 			String type = (String) record.get("type");
 			String targetSystem = systemConfig.getString(null, "curation",
 					"supported-types", type);
-			if (targetSystem.equals(system)) {
-				publishRecord(record);
-			} else {
-				publishRecordInExternalSystem(record,targetSystem);
+			if(systemRecordsMap.get(targetSystem) == null) {
+				systemRecordsMap.put(targetSystem, new ArrayList<JsonObject>());
 			}
+			List<JsonObject> targetSystemList = systemRecordsMap.get(targetSystem);
+			targetSystemList.add(record);
+			systemRecordsMap.put(targetSystem, targetSystemList);
 
+		}
+		for(String targetSystem: systemRecordsMap.keySet()) {
+			
+			if (targetSystem.equals(system)) {
+				for(JsonObject record : systemRecordsMap.get(targetSystem)) {
+					publishRecord(record);
+				}
+			} else {
+			publishRecordInExternalSystem(systemRecordsMap.get(targetSystem),targetSystem);
+		}
 		}
 
 	}
 
-	private void publishRecordInExternalSystem(JsonObject record, String sourceSystem) {
+	private void publishRecordInExternalSystem(List<JsonObject> list, String sourceSystem) {
+		JsonObject records = new JsonObject();
+		records.put("records", list);
 		PostMethod post;
 		try {
 			String url = systemConfig.getString(null, "curation",
@@ -96,7 +109,7 @@ public class PublicationHandler {
 			BasicHttpClient client = new BasicHttpClient(url);
 			post = new PostMethod(url);
 			StringRequestEntity requestEntity = new StringRequestEntity(
-				    new JsonSimple(record).toString(),
+					new JsonSimple(records).toString(),
 				    "application/json",
 				    "UTF-8");
 			post.setRequestEntity(requestEntity);
@@ -109,7 +122,7 @@ public class PublicationHandler {
 								 status, text));
 				log.error(String
 						.format("Request message was: %s",
-								 new JsonSimple(record).toString()));
+								 new JsonSimple(records).toString()));
 				return;
 			}
 
