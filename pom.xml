@@ -51,5 +51,10 @@
             <version>4.1</version>
         </dependency>
     </dependencies>
-
+    <scm>
+			<url>scm:git://github.com/redbox-mint/redbox-transaction-external-curation.git</url>
+			<connection>scm:git://github.com/redbox-mint/redbox-transaction-external-curation.git</connection>
+			<developerConnection>scm:git:https://github.com/redbox-mint/redbox-transaction-external-curation.git</developerConnection>
+			<tag>HEAD</tag>
+		</scm>
 </project>
